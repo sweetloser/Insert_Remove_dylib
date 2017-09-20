@@ -76,7 +76,6 @@ int main(int argc, const char * argv[]) {
                 fprintf(stderr, "remove:%s\n",[remove_dylib_path UTF8String]);
                 [Remove_dylib Remove_dylib:remove_dylib_path targetFile:target_path];
             }
-            
             if (insert_dylib_path==nil && remove_dylib_path==nil) {
                 fprintf(stderr, "ERROR!!!\n");
                 
