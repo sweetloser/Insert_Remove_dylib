@@ -35,7 +35,6 @@ int main(int argc, const char * argv[]) {
             {NULL,                  0,                      NULL,   0},
             
         };
-        
         int ch;
         BOOL errorFlag = NO;
         while ((ch = getopt_long(argc, (char * const *)argv, "i:r:", longopts, NULL)) != -1) {
@@ -51,7 +50,9 @@ int main(int argc, const char * argv[]) {
                     remove_dylib_path = [NSString stringWithUTF8String:optarg];
                 }
                     break;
+                case 0:
                 default:
+                    errorFlag = YES;
                     break;
             }
         }
@@ -78,12 +79,9 @@ int main(int argc, const char * argv[]) {
             }
             if (insert_dylib_path==nil && remove_dylib_path==nil) {
                 fprintf(stderr, "ERROR!!!\n");
-                
                 print_usage();
-                
                 exit(1);
             }
-            
             fprintf(stderr, "completed!!!\n");
         }
         
