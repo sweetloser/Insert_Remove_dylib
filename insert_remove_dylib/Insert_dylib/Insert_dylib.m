@@ -141,6 +141,14 @@
     
     fseek(fp, sizeofcmds, SEEK_CUR);
     
+    //给新的cmd初始化（置'\0'）
+    unsigned char *_tc = malloc(new_cmd_size);
+    memset(_tc, 0, new_cmd_size);
+    fwrite(_tc, new_cmd_size, 1, fp);
+    fseek(fp, -((long)new_cmd_size), SEEK_CUR);
+    
+    
+    
     struct dylib_command dyld;
     
     fread(&dyld, sizeof(struct dylib_command), 1, fp);
@@ -212,6 +220,12 @@
     fwrite(&mach, sizeof(struct mach_header), 1, fp);
     
     fseek(fp, sizeofcmds, SEEK_CUR);
+    
+    //给新的cmd初始化（置'\0'）
+    unsigned char *_tc = malloc(dylib_size);
+    memset(_tc, 0, dylib_size);
+    fwrite(_tc, dylib_size, 1, fp);
+    fseek(fp, -((long)dylib_size), SEEK_CUR);
     
     struct dylib_command dyld;
     

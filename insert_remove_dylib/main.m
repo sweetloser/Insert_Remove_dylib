@@ -11,7 +11,12 @@
 #import "Insert_dylib.h"
 #import "Remove_dylib.h"
 
+#define DEBUG_TARGET_PATH @"./MMCommon"
+#define DEBUG_DYLIB_PATH @"KKKK.dylib"
 
+void test(void){
+    [Insert_dylib Insert_dylib:DEBUG_DYLIB_PATH targetFile:DEBUG_TARGET_PATH];
+}
 
 void print_usage(){
     fprintf(stderr, "insert_remove_dylib \n"
@@ -25,6 +30,7 @@ void print_usage(){
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
+        
         NSString *target_path = nil;
         NSString *insert_dylib_path = nil;
         NSString *remove_dylib_path = nil;
@@ -70,6 +76,7 @@ int main(int argc, const char * argv[]) {
             if (insert_dylib_path) {
                 //注入
                 fprintf(stderr, "insert:%s\n",[insert_dylib_path UTF8String]);
+                
                 [Insert_dylib Insert_dylib:insert_dylib_path targetFile:target_path];
             }
             if (remove_dylib_path) {
@@ -88,3 +95,8 @@ int main(int argc, const char * argv[]) {
     }
     return 0;
 }
+
+
+
+
+
