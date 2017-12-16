@@ -11,13 +11,6 @@
 #import "Insert_dylib.h"
 #import "Remove_dylib.h"
 
-#define DEBUG_TARGET_PATH @"./MMCommon"
-#define DEBUG_DYLIB_PATH @"KKKK.dylib"
-
-void test(void){
-    [Insert_dylib Insert_dylib:DEBUG_DYLIB_PATH targetFile:DEBUG_TARGET_PATH];
-}
-
 void print_usage(){
     fprintf(stderr, "insert_remove_dylib \n"
             "Usage: insert_remove_dylib [options] <mach-o-file>\n"
