@@ -13,16 +13,19 @@
 
 void print_usage(){
     fprintf(stderr, "insert_remove_dylib \n"
-            "Usage: insert_remove_dylib [options] <mach-o-file>\n"
+            "Usage: insert_remove_dylib [options] <dylib_path> <mach-o-file>\n"
             "\n"
             "   where options are:\n"
             "       -i          inject a dylib to mach-o file\n"
             "       -r          remove a dylib in mach-o file\n");
 }
 
-
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
+        
+        if (argc<4) {
+            print_usage();
+        }
         
         NSString *target_path = nil;
         NSString *insert_dylib_path = nil;
