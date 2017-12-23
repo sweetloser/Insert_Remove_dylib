@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <getopt.h>
-#import "Insert_dylib.h"
-#import "Remove_dylib.h"
+#import "Insert_dylib/Insert_dylib.h"
+#import "Remove_dylib/Remove_dylib.h"
 
 void print_usage(){
     fprintf(stderr, "insert_remove_dylib \n"
