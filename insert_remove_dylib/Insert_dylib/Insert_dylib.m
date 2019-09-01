@@ -19,7 +19,7 @@
 
     NSFileManager *file_manager = [NSFileManager defaultManager];
     if (![file_manager fileExistsAtPath:target_path isDirectory:NO]) {
-        fprintf(stderr, "error:target file not exist!!\n");
+        fprintf(stderr, "error:target file not exist!!!!!\n");
         //直接返回
         return;
     }
