@@ -7,10 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-
 @interface Insert_dylib : NSObject
-
 +(void)Insert_dylib:(NSString *)dylib_path targetFile:(NSString *)target_path;
-
-
 @end

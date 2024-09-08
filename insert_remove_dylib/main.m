@@ -11,8 +11,8 @@
 #import "Insert_dylib/Insert_dylib.h"
 #import "Remove_dylib/Remove_dylib.h"
 
-void print_usage(){
-    fprintf(stderr, "insert_remove_dylib \n"
+void print_usage(void) {
+    fprintf(stderr, "insert_remove_dylib v1.0.1\n"
             "Usage: insert_remove_dylib [options] <dylib_path> <mach-o-file>\n"
             "\n"
             "   where options are:\n"
@@ -91,8 +91,3 @@ int main(int argc, const char * argv[]) {
     }
     return 0;
 }
-
-
-
-
-

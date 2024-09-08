@@ -9,32 +9,25 @@
 #import "Remove_dylib.h"
 #import <mach-o/loader.h>
 #import <mach-o/fat.h>
-
 @implementation Remove_dylib
-
 +(void)Remove_dylib:(NSString *)dylib_path targetFile:(NSString *)target_path{
     NSFileManager *file_manager = [NSFileManager defaultManager];
-    if (![file_manager fileExistsAtPath:target_path isDirectory:NO]) {
+    if (![file_manager fileExistsAtPath:target_path isDirectory:NULL]) {
         fprintf(stderr, "error:target file not exist!!\n");
         //直接返回
         return;
     }
     char target_binary[1024] = {0};
     char buffer[4096] = {0};
-    
     strlcpy(target_binary, [target_path UTF8String], sizeof(target_binary));
-    
     //读取target文件(r+:以读/写方式打开文件，该文件必须存在。)
     FILE *target_fp = fopen(target_binary, "r+");
-    
     if (target_fp == NULL) {
-        fprintf(stderr, "open file error!!!");
+        fprintf(stderr, "open file error!!!\n");
         return;
     }
     fread(&buffer, sizeof(buffer), 1, target_fp);
-    
     struct fat_header *fh = (struct fat_header *)buffer;
-    
     switch (fh->magic) {
         case FAT_CIGAM:
         case FAT_MAGIC:
@@ -70,9 +63,7 @@
             break;
     }
     fclose(target_fp);
-    
 }
-
 +(void)remove_64:(FILE *)fp startAddress:(unsigned long)top injectPath:(NSString *)dylib_path{
     fseek(fp, top, SEEK_SET);
     struct mach_header_64 mach;
@@ -81,7 +72,6 @@
     struct load_command exist_cmd;
     char orig_dylib_name[1024] = {0};
     struct dylib_command orig_dylib;
-    
     unsigned char load_command_buffer[4096];
     for (int i=0; i<mach.ncmds; i++) {
         fread(&exist_cmd, sizeof(struct load_command), 1, fp);
@@ -94,7 +84,6 @@
             if (!strcmp(orig_dylib_name, [dylib_path UTF8String])) {
                 char filler[8] = {0};
                 fseek(fp, (-1024)+(-(unsigned long)orig_dylib.dylib.name.offset), SEEK_CUR);
-                
                 //判断要移除的是不是最后一个load command
                 if (i==mach.ncmds-1) {
                     //如果要移除的段是最后一段，则直接置‘\0’
@@ -104,12 +93,16 @@
                 }else{
                     fseek(fp, orig_dylib.cmdsize, SEEK_CUR);
                     long next_dylib_address = ftell(fp);
-                    
                     long other_dylib_size = mach.sizeofcmds-(next_dylib_address-load_command_start_address);
-                    
-                    fread(&load_command_buffer, other_dylib_size, 1, fp);
-                    fseek(fp, next_dylib_address-orig_dylib.cmdsize, SEEK_SET);
-                    fwrite(&load_command_buffer, other_dylib_size, 1, fp);
+                    long tmp_addr = next_dylib_address-orig_dylib.cmdsize;
+                    while (other_dylib_size > 0) {
+                        long tmp_size = other_dylib_size > 4096 ? 4096 : other_dylib_size;
+                        fread(&load_command_buffer, tmp_size, 1, fp);
+                        fseek(fp, tmp_addr, SEEK_SET);
+                        fwrite(&load_command_buffer, tmp_size, 1, fp);
+                        tmp_addr += tmp_size;
+                        other_dylib_size -= tmp_size;
+                    }
                     //将最后的一段置为‘\0’
                     for (int i=0; i<orig_dylib.cmdsize/8; i++) {
                         fwrite(filler, 8, 1, fp);
@@ -130,7 +123,6 @@
     }
     fprintf(stderr, "not found !!!\n");
 }
-
 +(void)remove_32:(FILE *)fp startAddress:(unsigned long)top injectPath:(NSString *)dylib_path{
     fseek(fp, top, SEEK_SET);
     struct mach_header mach;
@@ -139,7 +131,6 @@
     struct load_command exist_cmd;
     char orig_dylib_name[1024] = {0};
     struct dylib_command orig_dylib;
-    
     unsigned char load_command_buffer[4096];
     for (int i=0; i<mach.ncmds; i++) {
         fread(&exist_cmd, sizeof(struct load_command), 1, fp);
@@ -152,7 +143,6 @@
             if (!strcmp(orig_dylib_name, [dylib_path UTF8String])) {
                 char filler[8] = {0};
                 fseek(fp, (-1024)+(-(unsigned long)orig_dylib.dylib.name.offset), SEEK_CUR);
-                
                 //判断要移除的是不是最后一个load command
                 if (i==mach.ncmds-1) {
                     //如果要移除的段是最后一段，则直接置‘\0’
@@ -162,9 +152,7 @@
                 }else{
                     fseek(fp, orig_dylib.cmdsize, SEEK_CUR);
                     long next_dylib_address = ftell(fp);
-                    
                     long other_dylib_size = mach.sizeofcmds-(next_dylib_address-load_command_start_address);
-                    
                     fread(&load_command_buffer, other_dylib_size, 1, fp);
                     fseek(fp, next_dylib_address-orig_dylib.cmdsize, SEEK_SET);
                     fwrite(&load_command_buffer, other_dylib_size, 1, fp);
@@ -188,5 +176,4 @@
     }
     fprintf(stderr, "not found !!!\n");
 }
-
 @end
